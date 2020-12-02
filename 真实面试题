@@ -1,5 +1,38 @@
 1、线程池中的核心线程，是如何保活的？
+	https://www.jianshu.com/p/ac9b17b2d0a7
 
 2、两个线程交替打印1-100
+	解法一、使用wait()、notify()
+		https://blog.csdn.net/Sife_007/article/details/83046954
+
+	解法二、是否可以使用阻塞队列的方式
+
+	private int count = 1;
+	private BlockQueue queueA = new BlockQueue();
+	Runnable runnableA = new Runnable() {
+
+		public void run() {
+			if (count > 100) return;
+			int value = queueA.take();
+			System.out.println(String.valueOf(value));
+			queueB.offer(++count);
+		}
+	};
+	private BlockQueue queueB = new BlockQueue();
+	Runnable runnableB = new Runnable() {
+
+		public void run() {
+			if (count > 100) return;
+			int value = queueB.take();
+			System.out.println(String.valueOf(value));
+			queueA.offer(++count);
+		}
+	};
+
+	public static void main() {
+		queueA.offer(count);
+		new Thead(runnableA).start();
+		new Thread(runnableB).start();
+	}
 
 3、在double-check的单例模式中，sychronized(...) 括号内部要填写什么？
