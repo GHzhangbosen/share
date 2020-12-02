@@ -197,30 +197,71 @@ c.改为尾插法进行数据添加，这样就避免了多线程引起的环状
 
   ====================================================================================================================================================================================
   1、Binder机制了解吗？能说下进程通信的过程吗？
-
+   1.binder机制是c/s模型
+   2.server端需要在servive manager注册对应的binder驱动
+   3.server端在内核控件的共享内存进行mmap内存映射
+   4.client端通过servicemanager拿到server端的binder代理对象进行方法调用，参数写入，线程挂起等待 (transact)
+   5.client数据写入到共享内存，server端拿到数据进行处理，再写入reply(onTransact)
+   6.client拿到返回数据，结束一次ipc
 
 
   2、Serializable和Parcelable的区别
-
+   1.Serializable是java的，Parcelable是android特有的
+   2.Serializable相对Parcelable使用起来简单,实现即可,Parcelable需要覆写序列化和反序列化的方法
+   3.Serializable多用于数据永久性保存，Parcelable多用于内存中的数据传输(前者序列化的效率较低)
+   4.Parcelable也可以永久性保存，但是要转为二进制数据保存
 
   3、Handler通信过程
-
+   1.通过threadlocal来进行线程切换
+   2.通过handler进行消息分发
+   3.通过looper进行消息轮询
+   4.通过messagequeue进行消息存储
+   5.通过Message进行消息对象缓存
 
   4、垃圾回收算法
-
+   1.mark-sweep 标记清除 有内存碎片
+   2.mark-整理   标记整理 有性能浪费，需要移动内存快
+   3.复制        内存浪费  仅仅使用了一半的内存
 
   5、Android启动过程
-
+   1.应用进程传入intent(包名 类名)到交互管理类 instrumentation
+   2.调用activitymanagerproxy开始binder进程通信，传入intent binder token等
+   3.到ams进程校验当前的intent合法性，标记当前activity状态，切换状态 paused resumed pausing等
+   4.再次binder通信，通知应用进程将对应的activity置为pause状态
+   5.再次binder通信，通知ams已经置pause完毕，ams再次进行状态设置，并且创建taskrecord或者process
+   6.再次binder通信，应用进程进行application创建和activity的创建
+   
 
   6、线程安全的起因
-
+   1.多线程对共享资源的访问
 
   7、了解哪些设计模式
-
+   1.单例，适配器，观察者，工厂，代理，外观，装饰，策略，桥接，模板等等
 
   8、类加载机制
-
+   1.加载 连接 初始化
+   2.加载 验证 准备 解析 初始化 使用 卸载
+   加载
+   1.通过类的全限定类名获取对应的字节流，本地，网络
+   2.讲字节流所对的静态存储结构转为内存中的动态数据结构
+   3.生成对外暴露的javalangclass对象，也就是方法区中的访问入口
+   验证
+   1.验证字节流是否符合class文件格式的规范
+   2.验证java代码合法性
+   3.验证程序语法的合法性和逻辑性
+   4.符号应用验证
+   准备
+   1.静态变量进行初始化
+   解析
+   1.符号引用转为直接引用
+   初始化
+   1.对象创建 执行java代码
+   
 
   9、讲述内存模型
-
+   1.堆 内存共享 gc频率最高的地方
+   2.虚拟机栈 线程独有 
+   3.本地方法栈 线程独有
+   4.程序计数器  多用于线程唤醒后代码执行的位置
+   5.方法区  类信息，常量
 
